@@ -364,16 +364,210 @@
     };
 
     const defaultAsset = assetData.BBCA;
+    const WL_KEY = 'yuan_terminal_watchlist';
+
+    function getWatchlist() {
+      try { return JSON.parse(localStorage.getItem(WL_KEY) || '[]'); } catch { return []; }
+    }
+    function saveWatchlist(list) { localStorage.setItem(WL_KEY, JSON.stringify(list)); }
+    function isInWatchlist(symbol) { return getWatchlist().some(w => w.symbol === symbol); }
+
+    function toggleDetailWatchlist(symbol, name, price, change, changePos) {
+      let list = getWatchlist();
+      const idx = list.findIndex(w => w.symbol === symbol);
+      const btn = document.getElementById('btnWatchlist');
+      if (idx >= 0) {
+        list.splice(idx, 1);
+        saveWatchlist(list);
+        if (btn) {
+          btn.textContent = '+ Watchlist';
+          btn.className = 'px-4 py-2 text-sm font-medium rounded-lg transition bg-amber-500 hover:bg-amber-400 text-dark-900';
+        }
+        alert(symbol + ' dihapus dari Watchlist');
+      } else {
+        list.unshift({ symbol, name, price, change, changePos: !!changePos, market: 'detail' });
+        if (list.length > 20) list = list.slice(0, 20);
+        saveWatchlist(list);
+        if (btn) {
+          btn.textContent = '★ Dalam Watchlist';
+          btn.className = 'px-4 py-2 text-sm font-medium rounded-lg transition bg-dark-600 text-amber-400 border border-amber-500/50';
+        }
+        alert(symbol + ' ditambah ke Watchlist');
+      }
+    }
+
+    const cryptoIdMap = {
+      BTCUSDT: 'bitcoin', ETHUSDT: 'ethereum', SOLUSDT: 'solana', BNBUSDT: 'binancecoin',
+      XRPUSDT: 'ripple', ADAUSDT: 'cardano', DOGEUSDT: 'dogecoin', AVAXUSDT: 'avalanche-2',
+      DOTUSDT: 'polkadot', LINKUSDT: 'chainlink', TONUSDT: 'the-open-network', NEARUSDT: 'near'
+    };
+
+    function formatIdr(num) {
+      if (num >= 1e9) return 'Rp ' + (num / 1e9).toFixed(2).replace('.', ',') + ' M';
+      if (num >= 1e6) return 'Rp ' + (num / 1e6).toFixed(2).replace('.', ',') + ' jt';
+      if (num >= 1000) return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+      if (num >= 1) return 'Rp ' + num.toFixed(0);
+      return 'Rp ' + num.toFixed(4).replace('.', ',');
+    }
+
+    function formatChange(pct) {
+      const sign = pct >= 0 ? '+' : '';
+      return sign + pct.toFixed(2).replace('.', ',') + '%';
+    }
+
+    async function fetchLivePrice(symbol, type) {
+      try {
+        if (type === 'crypto' && cryptoIdMap[symbol]) {
+          const id = cryptoIdMap[symbol];
+          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd,idr&include_24hr_change=true`);
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (!data[id]) return null;
+          const d = data[id];
+          const priceIdr = d.idr || (d.usd * 16000);
+          const change = d.idr_24h_change ?? d.usd_24h_change ?? 0;
+          return {
+            price: formatIdr(priceIdr),
+            change: formatChange(change),
+            changePos: change >= 0,
+            rawChange: change,
+            rawPrice: priceIdr
+          };
+        }
+        if (type === 'forex') {
+          const res = await fetch('https://open.er-api.com/v6/latest/USD');
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (data.result !== 'success') return null;
+          const rates = data.rates;
+          const calc = {
+            EURUSD: () => (1 / rates.EUR).toFixed(4),
+            GBPUSD: () => (1 / rates.GBP).toFixed(4),
+            USDJPY: () => rates.JPY.toFixed(2),
+            AUDUSD: () => (1 / rates.AUD).toFixed(4),
+            USDCAD: () => rates.CAD.toFixed(4),
+            USDCHF: () => rates.CHF.toFixed(4),
+            NZDUSD: () => (1 / rates.NZD).toFixed(4),
+            EURGBP: () => (rates.GBP / rates.EUR).toFixed(4),
+            EURJPY: () => (rates.JPY / rates.EUR).toFixed(2),
+            GBPJPY: () => (rates.JPY / rates.GBP).toFixed(2)
+          };
+          if (calc[symbol]) {
+            const p = parseFloat(calc[symbol]());
+            return {
+              price: calc[symbol]().replace('.', ','),
+              change: null,
+              changePos: true,
+              rawPrice: p
+            };
+          }
+        }
+      } catch (e) {
+        console.warn('Live price fetch failed', e);
+      }
+      return null;
+    }
 
     function getQuerySymbol() {
       const params = new URLSearchParams(window.location.search);
       return (params.get('symbol') || 'BBCA').toUpperCase();
     }
 
-    function renderDetail(symbol) {
-      const data = assetData[symbol] || defaultAsset;
+    function parsePriceNum(str) {
+      if (!str) return null;
+      let s = String(str).replace(/Rp\s*/i, '').replace(/\s/g, '');
+      if (/M$/i.test(s)) return parseFloat(s.replace(',', '.')) * 1e9;
+      if (/jt$/i.test(s)) return parseFloat(s.replace(',', '.')) * 1e6;
+      s = s.replace(/\./g, '').replace(',', '.');
+      const n = parseFloat(s);
+      return isNaN(n) ? null : n;
+    }
+
+    function formatLevel(num, type) {
+      if (num == null) return '-';
+      if (type === 'crypto') {
+        if (num >= 1e9) return (num / 1e9).toFixed(2).replace('.', ',') + ' M';
+        if (num >= 1e6) return (num / 1e6).toFixed(2).replace('.', ',') + ' jt';
+        if (num >= 1000) return Math.round(num).toLocaleString('id-ID');
+        return num.toFixed(4);
+      }
+      if (num >= 50) return num.toFixed(2);
+      return num.toFixed(4);
+    }
+
+    function computeLevels(priceNum, signal, type) {
+      if (!priceNum || priceNum <= 0) return null;
+      const isBuy = signal === 'BUY';
+      const isSell = signal === 'SELL';
+      const slPct = type === 'crypto' ? 0.028 : 0.012;
+      const tp1Pct = type === 'crypto' ? 0.035 : 0.015;
+      const tp2Pct = type === 'crypto' ? 0.065 : 0.028;
+      const entryPct = type === 'crypto' ? 0.008 : 0.003;
+      let entryLow, entryHigh, sl, tp1, tp2;
+      if (isBuy) {
+        entryLow = priceNum * (1 - entryPct);
+        entryHigh = priceNum * (1 + entryPct * 0.3);
+        sl = priceNum * (1 - slPct);
+        tp1 = priceNum * (1 + tp1Pct);
+        tp2 = priceNum * (1 + tp2Pct);
+      } else if (isSell) {
+        entryLow = priceNum * (1 - entryPct * 0.3);
+        entryHigh = priceNum * (1 + entryPct);
+        sl = priceNum * (1 + slPct);
+        tp1 = priceNum * (1 - tp1Pct);
+        tp2 = priceNum * (1 - tp2Pct);
+      } else {
+        entryLow = priceNum * 0.995;
+        entryHigh = priceNum * 1.005;
+        sl = priceNum * 0.97;
+        tp1 = priceNum * 1.02;
+        tp2 = priceNum * 1.04;
+      }
+      const risk = Math.abs(priceNum - sl);
+      const reward = Math.abs(tp1 - priceNum);
+      const rr = risk > 0 ? (reward / risk).toFixed(1) : '-';
+      return {
+        entry: formatLevel(entryLow, type) + ' - ' + formatLevel(entryHigh, type),
+        sl: formatLevel(sl, type),
+        tp1: formatLevel(tp1, type),
+        tp2: formatLevel(tp2, type),
+        rr: '1 : ' + rr
+      };
+    }
+
+    function liveSignalFromChange(changePct, baseSignal) {
+      if (changePct == null) return baseSignal;
+      if (changePct >= 1.2) return 'BUY';
+      if (changePct <= -1.2) return 'SELL';
+      if (changePct >= 0.4) return baseSignal === 'SELL' ? 'HOLD' : 'BUY';
+      if (changePct <= -0.4) return baseSignal === 'BUY' ? 'HOLD' : 'SELL';
+      return (baseSignal === 'BUY' || baseSignal === 'SELL') ? baseSignal : 'HOLD';
+    }
+
+    function renderDetail(symbol, liveOverride = null) {
+      const data = { ...(assetData[symbol] || defaultAsset) };
+      if (liveOverride) {
+        data.price = liveOverride.price;
+        if (liveOverride.change) {
+          data.change = liveOverride.change;
+          data.changePos = liveOverride.changePos;
+        }
+        if (liveOverride.rawChange != null) {
+          data.signal = liveSignalFromChange(liveOverride.rawChange, data.signal);
+        }
+        const priceNum = liveOverride.rawPrice || parsePriceNum(liveOverride.price);
+        const levels = computeLevels(priceNum, data.signal, data.type);
+        if (levels) {
+          data.entry = levels.entry;
+          data.sl = levels.sl;
+          data.tp1 = levels.tp1;
+          data.tp2 = levels.tp2;
+          data.rr = levels.rr;
+        }
+      }
       const isBuy = data.signal === 'BUY';
-      const signalColor = isBuy ? 'emerald' : 'red';
+      const signalColor = isBuy ? 'emerald' : (data.signal === 'SELL' ? 'red' : 'slate');
+      const isLive = !!liveOverride;
 
       const specialHtml = (data.special || []).map(s => `
         <div class="bg-dark-800 border border-${s.color}-500/30 rounded-xl p-4">
@@ -440,12 +634,17 @@
             <div class="text-right">
               <p class="text-3xl font-bold">${data.price}</p>
               <p class="${data.changePos ? 'text-emerald-400' : 'text-red-400'} font-medium">${data.change}</p>
-              <p class="text-xs text-slate-500 mt-1">Update: Real-time (mock)</p>
+              <p class="text-xs text-slate-500 mt-1">
+                ${isLive ? '<span class="text-emerald-400">● Live</span> · ' : ''}
+                Update: ${new Date().toLocaleTimeString('id-ID')}
+              </p>
             </div>
           </div>
 
           <div class="flex gap-3 mt-5">
-            <button class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-dark-900 text-sm font-medium rounded-lg transition">+ Watchlist</button>
+            <button id="btnWatchlist" onclick="toggleDetailWatchlist('${data.symbol}', '${data.name}', '${data.price}', '${data.change}', ${data.changePos})" class="px-4 py-2 text-sm font-medium rounded-lg transition ${isInWatchlist(data.symbol) ? 'bg-dark-600 text-amber-400 border border-amber-500/50' : 'bg-amber-500 hover:bg-amber-400 text-dark-900'}">
+              ${isInWatchlist(data.symbol) ? '★ Dalam Watchlist' : '+ Watchlist'}
+            </button>
             <button class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-sm font-medium rounded-lg transition">Set Alert</button>
             <button class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-sm font-medium rounded-lg transition">Share</button>
           </div>
@@ -537,7 +736,24 @@
       `;
     }
 
-    renderDetail(getQuerySymbol());
+    // Init with live price
+    (async () => {
+      const symbol = getQuerySymbol();
+      const base = assetData[symbol] || defaultAsset;
+      let live = null;
+      if (base.type === 'crypto' || base.type === 'forex') {
+        live = await fetchLivePrice(symbol, base.type);
+      }
+      renderDetail(symbol, live);
+
+      // Auto refresh every 60s for crypto/forex
+      if (base.type === 'crypto' || base.type === 'forex') {
+        setInterval(async () => {
+          const live2 = await fetchLivePrice(symbol, base.type);
+          if (live2) renderDetail(symbol, live2);
+        }, 60000);
+      }
+    })();
   </script>
 </body>
 </html>
