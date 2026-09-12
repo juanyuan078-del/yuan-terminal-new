@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuan Terminal - Analisa Web</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: { 900: '#0B1120', 800: '#0F172A', 700: '#1E293B', 600: '#334155' }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-dark-900 text-slate-200 min-h-screen">
+
+  <header class="h-14 bg-dark-800 border-b border-dark-600 flex items-center px-4 sticky top-0 z-50">
+    <a href="yuan-terminal.html" class="flex items-center gap-3 hover:opacity-80">
+      <div class="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center font-bold text-dark-900 text-sm">Y</div>
+      <span class="font-semibold text-lg tracking-tight">Yuan Terminal</span>
+    </a>
+    <nav class="ml-10 flex items-center gap-1">
+      <a href="yuan-terminal.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Dashboard</a>
+      <a href="yuan-terminal.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Saham</a>
+      <a href="yuan-terminal.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Forex</a>
+      <a href="yuan-terminal.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Crypto</a>
+      <a href="yuan-terminal-analisa.html" class="px-4 py-2 text-sm font-medium text-amber-400 border-b-2 border-amber-500">Analisa Web</a>
+    </nav>
+    <div class="ml-auto">
+      <div class="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center text-sm font-medium text-dark-900">U</div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto p-6">
+    <div class="mb-8">
+      <h1 class="text-2xl font-bold mb-1">Analisa Web Pribadi</h1>
+      <p class="text-slate-400 text-sm">Cek SEO dasar, meta tag, struktur heading, dan rekomendasi perbaikan website kamu.</p>
+    </div>
+
+    <!-- Input -->
+    <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-6">
+      <label class="text-xs font-semibold text-slate-500 uppercase tracking-wider">URL Website</label>
+      <div class="flex gap-3 mt-2">
+        <input id="urlInput" type="url" placeholder="https://contoh.com" 
+               class="flex-1 bg-dark-700 border border-dark-600 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:border-amber-500 placeholder-slate-500"
+               value="">
+        <button id="btnAnalyze" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-dark-900 text-sm font-medium rounded-lg transition whitespace-nowrap">
+          Analisa Sekarang
+        </button>
+      </div>
+      <p class="text-xs text-slate-500 mt-2">Contoh: https://google.com · https://tokopedia.com · website pribadimu</p>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="hidden text-center py-16">
+      <div class="inline-block w-8 h-8 border-2 border-amber-500 border-t-transparent rounded-full animate-spin mb-3"></div>
+      <p class="text-slate-400 text-sm">Sedang menganalisa website...</p>
+    </div>
+
+    <!-- Empty state -->
+    <div id="emptyState" class="text-center py-16 text-slate-500">
+      <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mx-auto mb-3 opacity-40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+      </svg>
+      <p class="text-sm">Masukkan URL website lalu klik <strong class="text-slate-300">Analisa Sekarang</strong></p>
+    </div>
+
+    <!-- Results -->
+    <div id="results" class="hidden space-y-6">
+
+      <!-- Score Overview -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <p class="text-xs text-slate-500 mb-1">Skor Keseluruhan</p>
+          <p id="scoreOverall" class="text-3xl font-bold text-amber-400">-</p>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <p class="text-xs text-slate-500 mb-1">SEO Dasar</p>
+          <p id="scoreSeo" class="text-3xl font-bold">-</p>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <p class="text-xs text-slate-500 mb-1">Struktur</p>
+          <p id="scoreStructure" class="text-3xl font-bold">-</p>
+        </div>
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-4 text-center">
+          <p class="text-xs text-slate-500 mb-1">Meta & Tech</p>
+          <p id="scoreMeta" class="text-3xl font-bold">-</p>
+        </div>
+      </div>
+
+      <!-- Site info -->
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h2 class="font-semibold mb-3">Info Website</h2>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <div><span class="text-slate-500">URL:</span> <span id="infoUrl" class="text-slate-200 break-all"></span></div>
+          <div><span class="text-slate-500">Title:</span> <span id="infoTitle" class="text-slate-200"></span></div>
+          <div class="md:col-span-2"><span class="text-slate-500">Description:</span> <span id="infoDesc" class="text-slate-200"></span></div>
+        </div>
+      </div>
+
+      <!-- Checklist -->
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h2 class="font-semibold mb-4">Checklist SEO & Teknis</h2>
+        <div id="checklist" class="space-y-2"></div>
+      </div>
+
+      <!-- Headings -->
+      <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+        <h2 class="font-semibold mb-4">Struktur Heading</h2>
+        <div id="headings" class="space-y-1 text-sm"></div>
+      </div>
+
+      <!-- Recommendations -->
+      <div class="bg-dark-800 border border-amber-500/30 rounded-xl p-5">
+        <h2 class="font-semibold mb-4 flex items-center gap-2">
+          <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+          Rekomendasi Perbaikan
+        </h2>
+        <ul id="recommendations" class="space-y-2 text-sm text-slate-300 list-disc list-inside"></ul>
+      </div>
+
+      <p class="text-xs text-slate-500 text-center">Analisa bersifat dasar (on-page). Untuk audit mendalam gunakan tools seperti PageSpeed Insights, Ahrefs, atau Screaming Frog.</p>
+    </div>
+  </main>
+
+  <script>
+    const proxies = [
+      (url) => `https://api.allorigins.win/raw?url=${encodeURIComponent(url)}`,
+      (url) => `https://corsproxy.io/?${encodeURIComponent(url)}`
+    ];
+
+    function scoreColor(score) {
+      if (score >= 75) return 'text-emerald-400';
+      if (score >= 50) return 'text-amber-400';
+      return 'text-red-400';
+    }
+
+    function checkItem(ok, label, detail) {
+      return `
+        <div class="flex items-start gap-3 py-2 border-b border-dark-600 last:border-0">
+          <span class="mt-0.5 text-sm">${ok ? '✅' : '❌'}</span>
+          <div>
+            <p class="text-sm font-medium ${ok ? 'text-slate-200' : 'text-slate-300'}">${label}</p>
+            ${detail ? `<p class="text-xs text-slate-500 mt-0.5">${detail}</p>` : ''}
+          </div>
+        </div>
+      `;
+    }
+
+    async function fetchHtml(url) {
+      let lastError;
+      for (const makeProxy of proxies) {
+        try {
+          const res = await fetch(makeProxy(url), { signal: AbortSignal.timeout(12000) });
+          if (!res.ok) throw new Error('HTTP ' + res.status);
+          const text = await res.text();
+          if (text && text.length > 100) return text;
+        } catch (e) {
+          lastError = e;
+        }
+      }
+      throw lastError || new Error('Gagal mengambil halaman');
+    }
+
+    function analyzeHtml(html, url) {
+      const parser = new DOMParser();
+      const doc = parser.parseFromString(html, 'text/html');
+
+      const title = (doc.querySelector('title')?.textContent || '').trim();
+      const metaDesc = doc.querySelector('meta[name="description"]')?.getAttribute('content')?.trim() || '';
+      const metaViewport = !!doc.querySelector('meta[name="viewport"]');
+      const canonical = doc.querySelector('link[rel="canonical"]')?.getAttribute('href') || '';
+      const ogTitle = doc.querySelector('meta[property="og:title"]')?.getAttribute('content') || '';
+      const ogDesc = doc.querySelector('meta[property="og:description"]')?.getAttribute('content') || '';
+      const ogImage = doc.querySelector('meta[property="og:image"]')?.getAttribute('content') || '';
+      const h1s = [...doc.querySelectorAll('h1')].map(h => h.textContent.trim()).filter(Boolean);
+      const h2s = [...doc.querySelectorAll('h2')].map(h => h.textContent.trim()).filter(Boolean);
+      const h3s = [...doc.querySelectorAll('h3')].map(h => h.textContent.trim()).filter(Boolean);
+      const images = doc.querySelectorAll('img');
+      const imagesWithoutAlt = [...images].filter(img => !img.getAttribute('alt')).length;
+      const hasLang = !!doc.documentElement.getAttribute('lang');
+      const links = doc.querySelectorAll('a[href]');
+      const internalLinks = [...links].filter(a => {
+        const href = a.getAttribute('href') || '';
+        return href.startsWith('/') || href.includes(new URL(url).hostname);
+      }).length;
+
+      // Scoring
+      let seo = 0, structure = 0, meta = 0;
+      const checks = [];
+      const recs = [];
+
+      // Title
+      if (title) {
+        seo += 20;
+        checks.push(checkItem(true, 'Title tag ada', `"${title.slice(0, 80)}${title.length > 80 ? '…' : ''}" (${title.length} karakter)`));
+        if (title.length < 30 || title.length > 65) {
+          recs.push('Panjang title ideal sekitar 30–60 karakter agar tampil optimal di Google.');
+        } else {
+          seo += 5;
+        }
+      } else {
+        checks.push(checkItem(false, 'Title tag tidak ditemukan', 'Wajib ada untuk SEO'));
+        recs.push('Tambahkan tag <title> yang unik dan deskriptif.');
+      }
+
+      // Meta description
+      if (metaDesc) {
+        seo += 15;
+        checks.push(checkItem(true, 'Meta description ada', `${metaDesc.slice(0, 100)}${metaDesc.length > 100 ? '…' : ''} (${metaDesc.length} karakter)`));
+        if (metaDesc.length < 70 || metaDesc.length > 165) {
+          recs.push('Meta description ideal sekitar 120–160 karakter.');
+        } else {
+          seo += 5;
+        }
+      } else {
+        checks.push(checkItem(false, 'Meta description tidak ada', 'Mempengaruhi CTR di hasil pencarian'));
+        recs.push('Tambahkan meta name="description" yang menarik dan relevan.');
+      }
+
+      // H1
+      if (h1s.length === 1) {
+        structure += 25;
+        checks.push(checkItem(true, 'H1 tepat 1 buah', h1s[0].slice(0, 80)));
+      } else if (h1s.length === 0) {
+        checks.push(checkItem(false, 'Tidak ada H1', 'Setiap halaman sebaiknya punya 1 H1'));
+        recs.push('Tambahkan satu H1 sebagai judul utama halaman.');
+      } else {
+        structure += 10;
+        checks.push(checkItem(false, `H1 terlalu banyak (${h1s.length})`, 'Idealnya hanya 1 H1 per halaman'));
+        recs.push('Kurangi jumlah H1 — sisakan satu sebagai judul utama.');
+      }
+
+      // H2
+      if (h2s.length >= 1) {
+        structure += 15;
+        checks.push(checkItem(true, `Heading H2 ada (${h2s.length})`, 'Struktur konten lebih jelas'));
+      } else {
+        checks.push(checkItem(false, 'Tidak ada H2', 'Bantu Google pahami struktur konten'));
+        recs.push('Gunakan H2 untuk sub-bagian konten.');
+      }
+      if (h3s.length > 0) structure += 10;
+
+      // Viewport
+      if (metaViewport) {
+        meta += 20;
+        checks.push(checkItem(true, 'Meta viewport ada', 'Ramah mobile'));
+      } else {
+        checks.push(checkItem(false, 'Meta viewport tidak ada', 'Penting untuk tampilan mobile'));
+        recs.push('Tambahkan <meta name="viewport" content="width=device-width, initial-scale=1">');
+      }
+
+      // OG tags
+      if (ogTitle || ogDesc) {
+        meta += 15;
+        checks.push(checkItem(true, 'Open Graph tags ada', 'Lebih baik saat di-share ke sosial media'));
+      } else {
+        checks.push(checkItem(false, 'Open Graph belum lengkap', 'og:title / og:description'));
+        recs.push('Tambahkan og:title, og:description, dan og:image untuk share yang menarik.');
+      }
+      if (ogImage) meta += 10;
+
+      // Canonical
+      if (canonical) {
+        meta += 10;
+        checks.push(checkItem(true, 'Canonical URL ada', canonical.slice(0, 60)));
+      } else {
+        checks.push(checkItem(false, 'Canonical URL belum ada', 'Mencegah konten duplikat'));
+        recs.push('Tambahkan link rel="canonical" ke URL utama halaman.');
+      }
+
+      // Lang
+      if (hasLang) {
+        meta += 10;
+        checks.push(checkItem(true, 'Atribut lang ada', 'Membantu aksesibilitas & SEO'));
+      } else {
+        checks.push(checkItem(false, 'Atribut lang di <html> belum ada'));
+        recs.push('Tambahkan lang="id" (atau sesuai bahasa situs) pada tag html.');
+      }
+
+      // Images alt
+      if (images.length === 0) {
+        checks.push(checkItem(true, 'Tidak ada gambar', 'Skip pengecekan alt'));
+        structure += 10;
+      } else if (imagesWithoutAlt === 0) {
+        structure += 15;
+        checks.push(checkItem(true, `Semua gambar punya alt (${images.length})`, 'Baik untuk aksesibilitas & SEO'));
+      } else {
+        structure += 5;
+        checks.push(checkItem(false, `${imagesWithoutAlt} dari ${images.length} gambar tanpa alt`));
+        recs.push('Isi atribut alt pada semua gambar penting.');
+      }
+
+      // Links
+      if (internalLinks > 0) {
+        structure += 10;
+        checks.push(checkItem(true, `Internal links terdeteksi (~${internalLinks})`));
+      }
+
+      seo = Math.min(100, seo);
+      structure = Math.min(100, structure);
+      meta = Math.min(100, meta);
+      const overall = Math.round((seo + structure + meta) / 3);
+
+      if (overall >= 80) recs.unshift('Secara keseluruhan sudah bagus. Fokus ke konten berkualitas dan backlink.');
+      else if (overall >= 50) recs.unshift('Fondasi sudah ada, perbaiki poin yang masih merah untuk naik skor.');
+      else recs.unshift('Banyak elemen dasar SEO yang belum lengkap. Mulai dari title, meta description, dan H1.');
+
+      return {
+        title: title || '(tidak ada)',
+        description: metaDesc || '(tidak ada)',
+        url,
+        scores: { overall, seo, structure, meta },
+        checksHtml: checks.join(''),
+        headingsHtml: `
+          <p class="text-slate-500 text-xs mb-2">H1 (${h1s.length})</p>
+          ${h1s.length ? h1s.map(h => `<p class="pl-2 border-l-2 border-amber-500 mb-1">${h.slice(0, 100)}</p>`).join('') : '<p class="text-slate-600 text-xs mb-2">—</p>'}
+          <p class="text-slate-500 text-xs mb-2 mt-3">H2 (${h2s.length})</p>
+          ${h2s.length ? h2s.slice(0, 8).map(h => `<p class="pl-2 border-l-2 border-dark-600 mb-1 text-slate-300">${h.slice(0, 100)}</p>`).join('') : '<p class="text-slate-600 text-xs">—</p>'}
+          ${h2s.length > 8 ? `<p class="text-xs text-slate-500 mt-1">+${h2s.length - 8} lainnya</p>` : ''}
+        `,
+        recs
+      };
+    }
+
+    async function runAnalyze() {
+      let url = document.getElementById('urlInput').value.trim();
+      if (!url) {
+        alert('Masukkan URL terlebih dahulu');
+        return;
+      }
+      if (!/^https?:\/\//i.test(url)) url = 'https://' + url;
+
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('results').classList.add('hidden');
+      document.getElementById('loading').classList.remove('hidden');
+      document.getElementById('btnAnalyze').disabled = true;
+
+      try {
+        const html = await fetchHtml(url);
+        const result = analyzeHtml(html, url);
+
+        document.getElementById('scoreOverall').textContent = result.scores.overall;
+        document.getElementById('scoreOverall').className = 'text-3xl font-bold ' + scoreColor(result.scores.overall);
+        document.getElementById('scoreSeo').textContent = result.scores.seo;
+        document.getElementById('scoreSeo').className = 'text-3xl font-bold ' + scoreColor(result.scores.seo);
+        document.getElementById('scoreStructure').textContent = result.scores.structure;
+        document.getElementById('scoreStructure').className = 'text-3xl font-bold ' + scoreColor(result.scores.structure);
+        document.getElementById('scoreMeta').textContent = result.scores.meta;
+        document.getElementById('scoreMeta').className = 'text-3xl font-bold ' + scoreColor(result.scores.meta);
+
+        document.getElementById('infoUrl').textContent = result.url;
+        document.getElementById('infoTitle').textContent = result.title;
+        document.getElementById('infoDesc').textContent = result.description;
+        document.getElementById('checklist').innerHTML = result.checksHtml;
+        document.getElementById('headings').innerHTML = result.headingsHtml;
+        document.getElementById('recommendations').innerHTML = result.recs.map(r => `<li>${r}</li>`).join('');
+
+        document.getElementById('results').classList.remove('hidden');
+      } catch (e) {
+        console.error(e);
+        alert('Gagal menganalisa URL ini.\n\nKemungkinan:\n- Website memblokir akses\n- URL salah\n- Koneksi / proxy bermasalah\n\nCoba URL lain (misalnya https://example.com)');
+        document.getElementById('emptyState').classList.remove('hidden');
+      } finally {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('btnAnalyze').disabled = false;
+      }
+    }
+
+    document.getElementById('btnAnalyze').addEventListener('click', runAnalyze);
+    document.getElementById('urlInput').addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') runAnalyze();
+    });
+  </script>
+</body>
+</html>
