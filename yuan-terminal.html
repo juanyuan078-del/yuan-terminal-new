@@ -52,7 +52,7 @@
       <a href="#" data-nav="saham" class="nav-link px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Saham</a>
       <a href="#" data-nav="forex" class="nav-link px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Forex</a>
       <a href="#" data-nav="crypto" class="nav-link px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Crypto</a>
-      <a href="#" data-nav="analisa" class="nav-link px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Analisa Web</a>
+      <a href="yuan-terminal-analisa.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Analisa Web</a>
     </nav>
 
     <div class="ml-auto flex items-center gap-3">
@@ -208,12 +208,17 @@
 
       <!-- Table Section -->
       <div class="bg-dark-800 border border-dark-600 rounded-xl overflow-hidden">
-        <div class="px-5 py-3 border-b border-dark-600 flex items-center justify-between">
+        <div class="px-5 py-3 border-b border-dark-600 flex items-center justify-between flex-wrap gap-2">
           <div class="flex items-center gap-2">
             <h2 class="font-semibold">Hasil Screener</h2>
             <span class="text-xs bg-dark-700 text-slate-400 px-2 py-0.5 rounded-full" id="resultCount">0</span>
+            <span id="dataSourceBadge" class="text-[10px] px-2 py-0.5 rounded-full bg-slate-600/40 text-slate-400">Data contoh</span>
           </div>
-          <div class="flex items-center gap-3">
+          <div class="flex items-center gap-2">
+            <button id="btnRefresh" class="flex items-center gap-1.5 text-xs bg-dark-700 hover:bg-dark-600 border border-dark-600 rounded px-2.5 py-1 text-slate-300 transition" title="Refresh data live">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" /></svg>
+              Refresh
+            </button>
             <select id="sortSelect" class="bg-dark-700 border border-dark-600 text-xs rounded px-2 py-1 text-slate-300 cursor-pointer">
               <option>Urutkan: Score</option>
               <option>Urutkan: Perubahan %</option>
@@ -489,20 +494,33 @@
       }).join('');
     }
 
-    function applyFilters() {
+    function applyFilters(silent = false) {
       const data = getFilteredData();
       renderTable(data);
       renderSidePanels();
-      showToast(`Filter diterapkan • ${data.length} hasil`, 'success');
+      if (!silent) showToast(`Filter diterapkan • ${data.length} hasil`, 'success');
     }
 
     // Events
+    function updateDataSourceBadge() {
+      const badge = document.getElementById('dataSourceBadge');
+      if (!badge) return;
+      if (currentMarket === 'saham') {
+        badge.textContent = 'Data contoh';
+        badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-slate-600/40 text-slate-400';
+      } else {
+        badge.textContent = 'Harga Live';
+        badge.className = 'text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400';
+      }
+    }
+
     document.querySelectorAll('.market-btn').forEach(btn => {
       btn.addEventListener('click', () => {
         document.querySelectorAll('.market-btn').forEach(b => b.className = 'market-btn py-2 text-xs font-medium rounded-lg bg-dark-700 text-slate-400 hover:bg-dark-600');
         btn.className = 'market-btn py-2 text-xs font-medium rounded-lg bg-amber-500 text-dark-900';
         currentMarket = btn.dataset.market;
         document.getElementById('specialFilters').style.display = currentMarket === 'saham' ? 'block' : 'none';
+        updateDataSourceBadge();
         applyFilters();
       });
     });
@@ -723,16 +741,21 @@
       }
     }
 
-    async function updateLiveData() {
+    async function updateLiveData(showToastMsg = false) {
       const statusEl = document.getElementById('liveStatus');
-      if (statusEl) statusEl.textContent = 'Updating...';
+      const btnRefresh = document.getElementById('btnRefresh');
+      if (statusEl) statusEl.innerHTML = '<span class="text-slate-400">Updating...</span>';
+      if (btnRefresh) {
+        btnRefresh.disabled = true;
+        btnRefresh.classList.add('opacity-50');
+      }
 
       const [cryptoOk, forexOk] = await Promise.all([fetchCryptoLive(), fetchForexLive()]);
 
-      // Re-render if currently viewing crypto or forex
       if (currentMarket === 'crypto' || currentMarket === 'forex') {
-        applyFilters();
+        applyFilters(true);
       }
+      updateDataSourceBadge();
 
       const now = new Date();
       const timeStr = now.toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
@@ -741,9 +764,15 @@
           ? `<span class="text-emerald-400">● Live</span> <span class="text-slate-500">${timeStr}</span>`
           : `<span class="text-red-400">● Offline</span>`;
       }
+      if (btnRefresh) {
+        btnRefresh.disabled = false;
+        btnRefresh.classList.remove('opacity-50');
+      }
+      if (showToastMsg) {
+        showToast(cryptoOk || forexOk ? 'Data diperbarui' : 'Gagal update (cek koneksi)', cryptoOk || forexOk ? 'success' : 'error');
+      }
     }
 
-    // Add live status indicator in header area (via JS)
     function injectLiveStatus() {
       const header = document.querySelector('header .ml-auto');
       if (header && !document.getElementById('liveStatus')) {
@@ -757,12 +786,14 @@
 
     // Init
     injectLiveStatus();
+    updateDataSourceBadge();
     renderTable(allData.saham);
     renderSidePanels();
 
-    // First live update + interval every 60 seconds
+    document.getElementById('btnRefresh')?.addEventListener('click', () => updateLiveData(true));
+
     updateLiveData();
-    setInterval(updateLiveData, 60000);
+    setInterval(() => updateLiveData(false), 60000);
   </script>
 </body>
 </html>
