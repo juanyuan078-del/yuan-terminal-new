@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Yuan Terminal - Detail Aset</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            dark: {
+              900: '#0B1120',
+              800: '#0F172A',
+              700: '#1E293B',
+              600: '#334155',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+    body { font-family: 'Inter', sans-serif; }
+  </style>
+</head>
+<body class="bg-dark-900 text-slate-200 min-h-screen">
+
+  <header class="h-14 bg-dark-800 border-b border-dark-600 flex items-center px-4 sticky top-0 z-50">
+    <div class="flex items-center gap-3">
+      <a href="yuan-terminal.html" class="flex items-center gap-3 hover:opacity-80 transition">
+        <div class="w-8 h-8 rounded-lg bg-amber-500 flex items-center justify-center font-bold text-dark-900 text-sm">Y</div>
+        <span class="font-semibold text-lg tracking-tight">Yuan Terminal</span>
+      </a>
+    </div>
+    <nav class="ml-10 flex items-center gap-1">
+      <a href="yuan-terminal.html" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Dashboard</a>
+      <a href="#" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Saham</a>
+      <a href="#" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Forex</a>
+      <a href="#" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Crypto</a>
+      <a href="#" class="px-4 py-2 text-sm font-medium text-slate-400 hover:text-slate-200">Analisa Web</a>
+    </nav>
+    <div class="ml-auto">
+      <div class="w-9 h-9 rounded-full bg-amber-500 flex items-center justify-center text-sm font-medium text-dark-900">U</div>
+    </div>
+  </header>
+
+  <main class="max-w-7xl mx-auto p-6" id="mainContent"></main>
+
+  <script>
+    const assetData = {
+      BBCA: {
+        type: 'saham', symbol: 'BBCA', name: 'Bank Central Asia Tbk', price: 'Rp 9.425', change: '+110 (+1,18%)', changePos: true,
+        tags: ['LQ45'], scoreTech: 82, scoreFund: 75, signal: 'BUY', signalNote: 'Pullback Tren Naik',
+        entry: '9.350 - 9.420', sl: '9.180', tp1: '9.680', tp2: '9.950', rr: '1 : 2.1',
+        special: [
+          { title: 'Backdoor Listing', color: 'purple', text: 'Tidak termasuk backdoor listing', sub: 'Saham bluechip berpengalaman' },
+          { title: 'New Akuisisi', color: 'blue', text: 'Tidak ada rencana akuisisi besar', sub: 'Fokus organik growth' },
+          { title: 'Status Bandar', color: 'emerald', text: 'Akumulasi Ringan', sub: 'Foreign net buy 3 hari terakhir' }
+        ],
+        techSummary: [
+          { label: 'Tren Utama', value: 'Naik (Bullish)', pos: true },
+          { label: 'RSI (14)', value: '58.21 (Netral-Bullish)' },
+          { label: 'MACD', value: 'Bullish Cross', pos: true },
+          { label: 'EMA 20/50/200', value: 'Harga di atas semua', pos: true },
+          { label: 'ADX', value: '28.4 (Tren Kuat)' },
+          { label: 'Volume', value: 'Di atas rata-rata', pos: true }
+        ],
+        fundSummary: [
+          { label: 'PER', value: '18.4x' }, { label: 'PBV', value: '3.8x' },
+          { label: 'ROE', value: '20.1%', pos: true }, { label: 'DER', value: '0.2x (Sangat Aman)', pos: true },
+          { label: 'Dividend Yield', value: '2.8%' }, { label: 'Pertumbuhan Laba', value: '+12.5% YoY', pos: true }
+        ],
+        analysis: 'BBCA masih dalam tren naik menengah-panjang. Saat ini sedang pullback sehat ke area EMA 21. Volume masih mendukung. Cocok untuk akumulasi bertahap dengan SL di bawah 9.180.',
+        news: [
+          { sentiment: 'Positif', time: '2 jam lalu', source: 'CNBC Indonesia', title: 'BBCA catat pertumbuhan laba 12,5% di kuartal I', desc: 'Bank Central Asia membukukan laba bersih Rp 12,8 triliun...' },
+          { sentiment: 'Netral', time: '5 jam lalu', source: 'Bisnis.com', title: 'Analis: BBCA tetap jadi pilihan utama investor institusi', desc: 'Meskipun valuasi sudah premium, kualitas aset masih menjadi daya tarik...' }
+        ]
+      },
+      BREN: {
+        type: 'saham', symbol: 'BREN', name: 'Barito Renewables Energy', price: 'Rp 5.850', change: '+235 (+4,20%)', changePos: true,
+        tags: ['Backdoor', 'Akumulasi'], scoreTech: 86, scoreFund: 62, signal: 'BUY', signalNote: 'Breakout + Akumulasi Bandar',
+        entry: '5.700 - 5.820', sl: '5.450', tp1: '6.200', tp2: '6.600', rr: '1 : 2.3',
+        special: [
+          { title: 'Backdoor Listing', color: 'purple', text: 'Ya — masuk via reverse merger 2023', sub: 'Perlu pantau struktur & promoter' },
+          { title: 'New Akuisisi', color: 'blue', text: 'Ada rencana ekspansi aset hijau', sub: 'Pipeline proyek renewable' },
+          { title: 'Status Bandar', color: 'emerald', text: 'Akumulasi Bandar Kuat', sub: 'Volume besar + foreign masuk' }
+        ],
+        techSummary: [
+          { label: 'Tren Utama', value: 'Naik Kuat', pos: true }, { label: 'RSI (14)', value: '67.40 (Bullish)' },
+          { label: 'MACD', value: 'Histogram positif', pos: true }, { label: 'Volume', value: 'Lonjakan signifikan', pos: true }
+        ],
+        fundSummary: [
+          { label: 'Sektor', value: 'Renewable Energy' }, { label: 'Status', value: 'Backdoor Listing' }, { label: 'Market Cap', value: 'Rp 180 T+' }
+        ],
+        analysis: 'BREN sedang dalam fase akumulasi bandar setelah backdoor listing. Breakout recent diiringi volume tinggi. Risiko lebih tinggi karena sejarah backdoor, tapi momentum saat ini mendukung untuk swing trade.',
+        news: [
+          { sentiment: 'Positif', time: '1 hari lalu', source: 'Kontan', title: 'BREN terus ekspansi pembangkit energi terbarukan', desc: 'Manajemen menargetkan penambahan kapasitas signifikan tahun ini...' }
+        ]
+      },
+      EURUSD: {
+        type: 'forex', symbol: 'EURUSD', name: 'Euro / US Dollar', price: '1.0887', change: '-0.0025 (-0,23%)', changePos: false,
+        tags: ['Major Pair'], scoreTech: 36, scoreFund: 48, signal: 'SELL', signalNote: 'Rejection Resistance + Divergen',
+        entry: '1.0890 - 1.0910', sl: '1.0955', tp1: '1.0820', tp2: '1.0760', rr: '1 : 2.0',
+        special: [
+          { title: 'Bias Harian', color: 'red', text: 'Bearish', sub: 'USD menguat karena data US kuat' },
+          { title: 'Session', color: 'blue', text: 'London + NY Overlap', sub: 'Volatilitas tinggi diharapkan' },
+          { title: 'Key Level', color: 'amber', text: 'Resistance 1.0940', sub: 'Support terdekat 1.0820' }
+        ],
+        techSummary: [
+          { label: 'Tren H4', value: 'Turun (Bearish)', pos: false }, { label: 'RSI (14)', value: '44.12' },
+          { label: 'MACD', value: 'Bearish', pos: false }, { label: 'EMA 50', value: 'Harga di bawah', pos: false },
+          { label: 'Struktur', value: 'Lower High - Lower Low' }, { label: 'Volatilitas (ATR)', value: 'Sedang' }
+        ],
+        fundSummary: [
+          { label: 'USD Strength', value: 'Kuat (DXY naik)', pos: false }, { label: 'ECB Stance', value: 'Dovish leaning' },
+          { label: 'Fed Stance', value: 'Higher for longer' }, { label: 'Interest Rate Diff', value: 'USD unggul' }
+        ],
+        analysis: 'EURUSD menolak area resistance 1.0940 dengan jelas. Terdapat bearish divergence di RSI H4. Bias sell on rally. Tunggu koreksi ke 1.0890-1.0910 untuk entry sell, SL di atas 1.0955. Target pertama 1.0820, TP2 di 1.0760.',
+        news: [
+          { sentiment: 'Negatif', time: '3 jam lalu', source: 'ForexFactory', title: 'US Retail Sales lebih kuat dari ekspektasi', desc: 'Data mendukung USD tetap kuat dalam jangka pendek...' },
+          { sentiment: 'Netral', time: '6 jam lalu', source: 'Investing.com', title: 'ECB pejabat isyaratkan suku bunga tetap rendah lebih lama', desc: 'Membatasi ruang penguatan Euro...' }
+        ]
+      },
+      GBPUSD: {
+        type: 'forex', symbol: 'GBPUSD', name: 'British Pound / US Dollar', price: '1.2645', change: '+0.0019 (+0,15%)', changePos: true,
+        tags: ['Major Pair'], scoreTech: 61, scoreFund: 55, signal: 'BUY', signalNote: 'Pullback ke EMA + Support',
+        entry: '1.2620 - 1.2640', sl: '1.2570', tp1: '1.2720', tp2: '1.2780', rr: '1 : 2.2',
+        special: [
+          { title: 'Bias Harian', color: 'emerald', text: 'Bullish', sub: 'Pound masih relatif kuat' },
+          { title: 'Session', color: 'blue', text: 'London Open', sub: 'Fokus pergerakan pagi' },
+          { title: 'Key Level', color: 'amber', text: 'Support 1.2580', sub: 'Resistance 1.2720' }
+        ],
+        techSummary: [
+          { label: 'Tren H4', value: 'Naik', pos: true }, { label: 'RSI (14)', value: '52.80' },
+          { label: 'MACD', value: 'Histogram positif', pos: true }, { label: 'Struktur', value: 'Higher High - Higher Low', pos: true }
+        ],
+        fundSummary: [
+          { label: 'BoE Stance', value: 'Hawkish-neutral' }, { label: 'UK Data', value: 'Campuran' }, { label: 'USD Factor', value: 'Sedang melemah tipis' }
+        ],
+        analysis: 'GBPUSD masih dalam struktur uptrend. Saat ini pullback ke area EMA 21 dan support sebelumnya. Cocok untuk buy on dip dengan SL ketat di bawah 1.2570. TP1 di 1.2720 dan TP2 di 1.2780.',
+        news: [
+          { sentiment: 'Positif', time: '4 jam lalu', source: 'Reuters', title: 'Pound stabil usai data inflasi UK', desc: 'Pasar menunggu keputusan BoE berikutnya...' }
+        ]
+      },
+      BTCUSDT: {
+        type: 'crypto', symbol: 'BTCUSDT', name: 'Bitcoin / Tether', price: 'Rp 1.045.300', change: '+24.100 (+2,35%)', changePos: true,
+        tags: ['Layer 1'], scoreTech: 88, scoreFund: 79, signal: 'BUY', signalNote: 'Breakout Resistance + Volume',
+        entry: '1.030.000 - 1.042.000', sl: '995.000', tp1: '1.100.000', tp2: '1.180.000', rr: '1 : 2.5',
+        special: [
+          { title: 'Market Sentiment', color: 'emerald', text: 'Greed (62)', sub: 'Fear & Greed Index' },
+          { title: 'Funding Rate', color: 'blue', text: 'Positif (Long bias)', sub: 'Futures market' },
+          { title: 'Dominasi BTC', color: 'amber', text: 'Naik', sub: 'Modal masih fokus ke Bitcoin' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Naik Kuat', pos: true }, { label: 'RSI (14)', value: '63.47' },
+          { label: 'MACD', value: 'Bullish', pos: true }, { label: 'Volume', value: 'Breakout volume', pos: true },
+          { label: 'Struktur', value: 'Higher High', pos: true }, { label: 'Open Interest', value: 'Meningkat' }
+        ],
+        fundSummary: [
+          { label: 'Market Cap', value: '± Rp 20.000 T' }, { label: 'Dominance', value: '52%+' },
+          { label: 'ETF Flow', value: 'Net Inflow', pos: true }, { label: 'Halving Cycle', value: 'Post-halving bull' }
+        ],
+        analysis: 'BTC berhasil break resistance penting dengan volume tinggi. Struktur masih sangat bullish di daily. Koreksi ke area 1.030.000 - 1.042.000 bisa dijadikan entry buy. SL di bawah 995.000. Target menengah 1.100.000 (TP1) dan 1.180.000 (TP2).',
+        news: [
+          { sentiment: 'Positif', time: '1 jam lalu', source: 'CoinDesk', title: 'Bitcoin ETF kembali catat net inflow besar', desc: 'Institusi terus akumulasi BTC melalui ETF spot...' },
+          { sentiment: 'Positif', time: '5 jam lalu', source: 'Cointelegraph', title: 'Whale akumulasi 12.000 BTC dalam 48 jam', desc: 'Alamat-alamat besar terlihat menambah posisi...' }
+        ]
+      },
+      ETHUSDT: {
+        type: 'crypto', symbol: 'ETHUSDT', name: 'Ethereum / Tether', price: 'Rp 48.650', change: '+540 (+1,12%)', changePos: true,
+        tags: ['Layer 1'], scoreTech: 74, scoreFund: 71, signal: 'BUY', signalNote: 'Follow BTC + Support Hold',
+        entry: '47.800 - 48.400', sl: '46.200', tp1: '51.500', tp2: '54.000', rr: '1 : 2.1',
+        special: [
+          { title: 'Market Sentiment', color: 'emerald', text: 'Bullish', sub: 'Mengikuti momentum BTC' },
+          { title: 'Funding Rate', color: 'blue', text: 'Netral-Positif', sub: 'Tidak terlalu crowded' },
+          { title: 'ETH/BTC Ratio', color: 'amber', text: 'Stabil', sub: 'Belum outperform signifikan' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Naik', pos: true }, { label: 'RSI (14)', value: '57.20' },
+          { label: 'MACD', value: 'Positif', pos: true }, { label: 'Support Utama', value: '46.800 - 47.200' }
+        ],
+        fundSummary: [
+          { label: 'TVL Ecosystem', value: 'Tinggi', pos: true }, { label: 'ETF Flow', value: 'Campuran' }, { label: 'Upgrade', value: 'Dencun sudah live' }
+        ],
+        analysis: 'ETH bergerak mengikuti BTC dengan kekuatan sedikit lebih rendah. Area support 47.800-48.400 masih valid untuk entry. SL di 46.200. TP1 51.500 dan TP2 54.000.',
+        news: [
+          { sentiment: 'Positif', time: '3 jam lalu', source: 'The Block', title: 'Aktivitas DeFi di Ethereum kembali meningkat', desc: 'TVL dan jumlah transaksi harian menunjukkan perbaikan...' }
+        ]
+      },
+      SOLUSDT: {
+        type: 'crypto', symbol: 'SOLUSDT', name: 'Solana / Tether', price: 'Rp 2.145', change: '+78 (+3,80%)', changePos: true,
+        tags: ['Layer 1'], scoreTech: 85, scoreFund: 68, signal: 'BUY', signalNote: 'Strong Momentum + Volume',
+        entry: '2.080 - 2.130', sl: '1.980', tp1: '2.320', tp2: '2.500', rr: '1 : 2.4',
+        special: [
+          { title: 'Market Sentiment', color: 'emerald', text: 'Very Bullish', sub: 'Termasuk top performer' },
+          { title: 'Funding Rate', color: 'blue', text: 'Positif', sub: 'Long masih dominan' },
+          { title: 'Network Activity', color: 'amber', text: 'Tinggi', sub: 'Tx & fee meningkat' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Naik Sangat Kuat', pos: true }, { label: 'RSI (14)', value: '68.50' },
+          { label: 'Volume', value: 'Sangat tinggi', pos: true }, { label: 'Struktur', value: 'Breakout clear', pos: true }
+        ],
+        fundSummary: [
+          { label: 'Ecosystem', value: 'Memecoin + DeFi aktif' }, { label: 'Developer Activity', value: 'Tinggi', pos: true }
+        ],
+        analysis: 'SOL termasuk yang paling kuat di antara altcoin besar. Momentum masih intak. Entry ideal saat ada pullback kecil ke 2.080-2.130. SL di 1.980. TP1 2.320 dan TP2 2.500. Hindari FOMO di harga ekstrem.',
+        news: [
+          { sentiment: 'Positif', time: '2 jam lalu', source: 'Decrypt', title: 'Solana DEX volume tembus rekor baru', desc: 'Aktivitas trading on-chain SOL terus memecahkan rekor...' }
+        ]
+      },
+      // Additional Forex
+      USDJPY: {
+        type: 'forex', symbol: 'USDJPY', name: 'US Dollar / Yen', price: '156.82', change: '+0.50 (+0,32%)', changePos: true,
+        tags: ['Major Pair'], scoreTech: 70, scoreFund: 62, signal: 'BUY', signalNote: 'USD Strength + BoJ Dovish',
+        entry: '156.40 - 156.70', sl: '155.60', tp1: '157.80', tp2: '158.60', rr: '1 : 2.1',
+        special: [
+          { title: 'Bias Harian', color: 'emerald', text: 'Bullish USDJPY', sub: 'USD kuat vs JPY' },
+          { title: 'Session', color: 'blue', text: 'Tokyo + London', sub: 'Perhatikan intervensi BoJ' },
+          { title: 'Key Level', color: 'amber', text: 'Support 155.80', sub: 'Resistance 158.00' }
+        ],
+        techSummary: [
+          { label: 'Tren H4', value: 'Naik', pos: true }, { label: 'RSI (14)', value: '58.90' },
+          { label: 'MACD', value: 'Positif', pos: true }, { label: 'Struktur', value: 'Higher High', pos: true }
+        ],
+        fundSummary: [
+          { label: 'Fed Stance', value: 'Higher for longer' }, { label: 'BoJ Stance', value: 'Masih dovish' },
+          { label: 'Rate Differential', value: 'Sangat mendukung USD' }
+        ],
+        analysis: 'USDJPY masih didukung perbedaan suku bunga yang lebar. Selama BoJ belum agresif, bias tetap buy on dip. Entry di 156.40-156.70, SL 155.60, TP1 157.80.',
+        news: [
+          { sentiment: 'Positif', time: '2 jam lalu', source: 'Reuters', title: 'USDJPY mendekati level intervensi, pasar waspada', desc: 'Trader memantau kemungkinan intervensi BoJ di atas 158...' }
+        ]
+      },
+      AUDUSD: {
+        type: 'forex', symbol: 'AUDUSD', name: 'Australian Dollar / USD', price: '0.6612', change: '-0.0012 (-0,18%)', changePos: false,
+        tags: ['Major Pair'], scoreTech: 38, scoreFund: 42, signal: 'SELL', signalNote: 'Weak China Data + USD Strong',
+        entry: '0.6620 - 0.6635', sl: '0.6670', tp1: '0.6560', tp2: '0.6510', rr: '1 : 2.0',
+        special: [
+          { title: 'Bias Harian', color: 'red', text: 'Bearish', sub: 'AUD tertekan data China' },
+          { title: 'Session', color: 'blue', text: 'Sydney + Asia', sub: 'Sensitif terhadap risk sentiment' },
+          { title: 'Key Level', color: 'amber', text: 'Resistance 0.6650', sub: 'Support 0.6550' }
+        ],
+        techSummary: [
+          { label: 'Tren H4', value: 'Turun', pos: false }, { label: 'RSI (14)', value: '42.50' },
+          { label: 'MACD', value: 'Bearish', pos: false }
+        ],
+        fundSummary: [
+          { label: 'China Data', value: 'Lemah', pos: false }, { label: 'RBA Stance', value: 'Netral' }, { label: 'Risk Sentiment', value: 'Risk-off' }
+        ],
+        analysis: 'AUDUSD tertekan karena data China yang lemah dan USD yang kuat. Bias sell on rally ke 0.6620-0.6635. SL di atas 0.6670.',
+        news: [
+          { sentiment: 'Negatif', time: '4 jam lalu', source: 'ForexLive', title: 'China manufacturing data miss, AUD melemah', desc: 'Aussie menjadi salah satu yang terlemah di sesi Asia...' }
+        ]
+      },
+      GBPJPY: {
+        type: 'forex', symbol: 'GBPJPY', name: 'British Pound / Yen', price: '198.40', change: '+0.81 (+0,41%)', changePos: true,
+        tags: ['Cross Pair'], scoreTech: 72, scoreFund: 58, signal: 'BUY', signalNote: 'Strong Momentum Cross',
+        entry: '197.80 - 198.20', sl: '196.50', tp1: '200.00', tp2: '201.50', rr: '1 : 2.2',
+        special: [
+          { title: 'Bias Harian', color: 'emerald', text: 'Bullish', sub: 'Cross pair paling kuat hari ini' },
+          { title: 'Session', color: 'blue', text: 'London Open', sub: 'Volatilitas tinggi' },
+          { title: 'Key Level', color: 'amber', text: 'Support 197.00', sub: 'Resistance 200.00' }
+        ],
+        techSummary: [
+          { label: 'Tren H4', value: 'Naik Kuat', pos: true }, { label: 'RSI (14)', value: '59.70' },
+          { label: 'MACD', value: 'Bullish', pos: true }
+        ],
+        fundSummary: [
+          { label: 'BoE vs BoJ', value: 'Mendukung GBP' }, { label: 'Risk Sentiment', value: 'Risk-on membantu' }
+        ],
+        analysis: 'GBPJPY termasuk cross paling kuat. Momentum masih bagus. Buy on dip ke 197.80-198.20, SL 196.50, TP1 200.00.',
+        news: [
+          { sentiment: 'Positif', time: '3 jam lalu', source: 'DailyFX', title: 'GBPJPY break resistance, trader incar 200', desc: 'Cross pair ini menjadi favorit di sesi London...' }
+        ]
+      },
+      // Additional Crypto
+      BNBUSDT: {
+        type: 'crypto', symbol: 'BNBUSDT', name: 'BNB / Tether', price: 'Rp 8.752', change: '-93 (-1,05%)', changePos: false,
+        tags: ['Exchange Token'], scoreTech: 29, scoreFund: 55, signal: 'SELL', signalNote: 'Weakness vs BTC',
+        entry: '8.780 - 8.850', sl: '9.050', tp1: '8.400', tp2: '8.100', rr: '1 : 2.0',
+        special: [
+          { title: 'Market Sentiment', color: 'red', text: 'Underperform', sub: 'Kalah dibanding BTC & SOL' },
+          { title: 'Funding Rate', color: 'blue', text: 'Netral', sub: 'Tidak ekstrem' },
+          { title: 'BNB Chain', color: 'amber', text: 'Aktivitas stabil', sub: 'Volume DEX ordinary' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Lemah', pos: false }, { label: 'RSI (14)', value: '41.33' },
+          { label: 'vs BTC', value: 'Underperform', pos: false }
+        ],
+        fundSummary: [
+          { label: 'Exchange Volume', value: 'Stabil' }, { label: 'Burn Rate', value: 'Normal' }
+        ],
+        analysis: 'BNB relatif lemah dibanding BTC dan SOL. Ada peluang short on rally ke 8.780-8.850 dengan SL di atas 9.050.',
+        news: [
+          { sentiment: 'Netral', time: '5 jam lalu', source: 'CoinDesk', title: 'BNB bergerak sideways saat altcoin lain melonjak', desc: 'Trader lebih memilih SOL dan DOGE saat ini...' }
+        ]
+      },
+      DOGEUSDT: {
+        type: 'crypto', symbol: 'DOGEUSDT', name: 'Dogecoin / Tether', price: 'Rp 2.145', change: '+86 (+4,20%)', changePos: true,
+        tags: ['Meme'], scoreTech: 76, scoreFund: 52, signal: 'BUY', signalNote: 'Meme Momentum + Volume',
+        entry: '2.080 - 2.120', sl: '1.980', tp1: '2.300', tp2: '2.480', rr: '1 : 2.3',
+        special: [
+          { title: 'Market Sentiment', color: 'emerald', text: 'Hot Meme', sub: 'Volume lonjak tajam' },
+          { title: 'Social Buzz', color: 'blue', text: 'Tinggi', sub: 'Trending di X / Twitter' },
+          { title: 'Whale Activity', color: 'amber', text: 'Akumulasi', sub: 'Wallet besar masuk' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Naik Kuat', pos: true }, { label: 'RSI (14)', value: '64.80' },
+          { label: 'Volume', value: 'Sangat tinggi', pos: true }
+        ],
+        fundSummary: [
+          { label: 'Narrative', value: 'Meme season' }, { label: 'Community', value: 'Sangat aktif' }
+        ],
+        analysis: 'DOGE sedang dalam momentum meme yang kuat. Volume dan social buzz tinggi. Entry pullback ke 2.080-2.120, SL 1.980, TP1 2.300.',
+        news: [
+          { sentiment: 'Positif', time: '1 jam lalu', source: 'Cointelegraph', title: 'Dogecoin lonjak ikut meme coin rally', desc: 'DOGE menjadi salah satu yang paling dicari di sesi Asia...' }
+        ]
+      },
+      LINKUSDT: {
+        type: 'crypto', symbol: 'LINKUSDT', name: 'Chainlink / Tether', price: 'Rp 215.000', change: '+5.750 (+2,75%)', changePos: true,
+        tags: ['Oracle'], scoreTech: 78, scoreFund: 72, signal: 'BUY', signalNote: 'Strong Fundamentals + Breakout',
+        entry: '210.000 - 213.500', sl: '202.000', tp1: '228.000', tp2: '245.000', rr: '1 : 2.2',
+        special: [
+          { title: 'Market Sentiment', color: 'emerald', text: 'Bullish', sub: 'Oracle leader' },
+          { title: 'Partnership', color: 'blue', text: 'Aktif', sub: 'Banyak integrasi baru' },
+          { title: 'On-Chain', color: 'amber', text: 'Sehat', sub: 'Staking & usage naik' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Naik', pos: true }, { label: 'RSI (14)', value: '61.30' },
+          { label: 'MACD', value: 'Bullish', pos: true }
+        ],
+        fundSummary: [
+          { label: 'Use Case', value: 'Oracle dominan' }, { label: 'Tokenomics', value: 'Staking kuat' }
+        ],
+        analysis: 'LINK punya fundamental kuat sebagai oracle leader. Breakout recent didukung volume. Entry di 210k-213.5k, SL 202k, TP1 228k.',
+        news: [
+          { sentiment: 'Positif', time: '3 jam lalu', source: 'The Block', title: 'Chainlink umumkan integrasi baru dengan beberapa protokol besar', desc: 'Adopsi LINK terus meningkat di DeFi dan RWA...' }
+        ]
+      },
+      XRPUSDT: {
+        type: 'crypto', symbol: 'XRPUSDT', name: 'XRP / Tether', price: 'Rp 8.920', change: '-58 (-0,65%)', changePos: false,
+        tags: ['Payment'], scoreTech: 48, scoreFund: 60, signal: 'HOLD', signalNote: 'Sideways + Waiting Catalyst',
+        entry: '8.750 - 8.900', sl: '8.400', tp1: '9.400', tp2: '9.900', rr: '1 : 2.0',
+        special: [
+          { title: 'Market Sentiment', color: 'amber', text: 'Netral', sub: 'Menunggu kejelasan regulasi' },
+          { title: 'Legal', color: 'blue', text: 'Progress', sub: 'Kasus SEC masih dipantau' },
+          { title: 'Utility', color: 'emerald', text: 'Pembayaran cross-border', sub: 'Ripple network aktif' }
+        ],
+        techSummary: [
+          { label: 'Tren Daily', value: 'Sideways', pos: null }, { label: 'RSI (14)', value: '46.10' },
+          { label: 'Volume', value: 'Biasa' }
+        ],
+        fundSummary: [
+          { label: 'Narrative', value: 'Payment / Ondo' }, { label: 'Catalyst', value: 'Regulasi & ETF rumor' }
+        ],
+        analysis: 'XRP masih sideways. Belum ada breakout jelas. Lebih baik wait & see atau akumulasi tipis di support dengan SL ketat.',
+        news: [
+          { sentiment: 'Netral', time: '6 jam lalu', source: 'CoinDesk', title: 'XRP bergerak terbatas saat pasar fokus ke BTC dan SOL', desc: 'Volume XRP relatif lebih rendah dibanding top altcoin lain...' }
+        ]
+      }
+    };
+
+    const defaultAsset = assetData.BBCA;
+
+    const cryptoIdMap = {
+      BTCUSDT: 'bitcoin', ETHUSDT: 'ethereum', SOLUSDT: 'solana', BNBUSDT: 'binancecoin',
+      XRPUSDT: 'ripple', ADAUSDT: 'cardano', DOGEUSDT: 'dogecoin', AVAXUSDT: 'avalanche-2',
+      DOTUSDT: 'polkadot', LINKUSDT: 'chainlink', TONUSDT: 'the-open-network', NEARUSDT: 'near'
+    };
+
+    function formatIdr(num) {
+      if (num >= 1e9) return 'Rp ' + (num / 1e9).toFixed(2).replace('.', ',') + ' M';
+      if (num >= 1e6) return 'Rp ' + (num / 1e6).toFixed(2).replace('.', ',') + ' jt';
+      if (num >= 1000) return 'Rp ' + Math.round(num).toLocaleString('id-ID');
+      if (num >= 1) return 'Rp ' + num.toFixed(0);
+      return 'Rp ' + num.toFixed(4).replace('.', ',');
+    }
+
+    function formatChange(pct) {
+      const sign = pct >= 0 ? '+' : '';
+      return sign + pct.toFixed(2).replace('.', ',') + '%';
+    }
+
+    async function fetchLivePrice(symbol, type) {
+      try {
+        if (type === 'crypto' && cryptoIdMap[symbol]) {
+          const id = cryptoIdMap[symbol];
+          const res = await fetch(`https://api.coingecko.com/api/v3/simple/price?ids=${id}&vs_currencies=usd,idr&include_24hr_change=true`);
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (!data[id]) return null;
+          const d = data[id];
+          const priceIdr = d.idr || (d.usd * 16000);
+          const change = d.idr_24h_change ?? d.usd_24h_change ?? 0;
+          return {
+            price: formatIdr(priceIdr),
+            change: formatChange(change),
+            changePos: change >= 0,
+            rawChange: change,
+            rawPrice: priceIdr
+          };
+        }
+        if (type === 'forex') {
+          const res = await fetch('https://open.er-api.com/v6/latest/USD');
+          if (!res.ok) return null;
+          const data = await res.json();
+          if (data.result !== 'success') return null;
+          const rates = data.rates;
+          const calc = {
+            EURUSD: () => (1 / rates.EUR).toFixed(4),
+            GBPUSD: () => (1 / rates.GBP).toFixed(4),
+            USDJPY: () => rates.JPY.toFixed(2),
+            AUDUSD: () => (1 / rates.AUD).toFixed(4),
+            USDCAD: () => rates.CAD.toFixed(4),
+            USDCHF: () => rates.CHF.toFixed(4),
+            NZDUSD: () => (1 / rates.NZD).toFixed(4),
+            EURGBP: () => (rates.GBP / rates.EUR).toFixed(4),
+            EURJPY: () => (rates.JPY / rates.EUR).toFixed(2),
+            GBPJPY: () => (rates.JPY / rates.GBP).toFixed(2)
+          };
+          if (calc[symbol]) {
+            const p = parseFloat(calc[symbol]());
+            return {
+              price: calc[symbol]().replace('.', ','),
+              change: null,
+              changePos: true,
+              rawPrice: p
+            };
+          }
+        }
+      } catch (e) {
+        console.warn('Live price fetch failed', e);
+      }
+      return null;
+    }
+
+    function getQuerySymbol() {
+      const params = new URLSearchParams(window.location.search);
+      return (params.get('symbol') || 'BBCA').toUpperCase();
+    }
+
+    function parsePriceNum(str) {
+      if (!str) return null;
+      let s = String(str).replace(/Rp\s*/i, '').replace(/\s/g, '');
+      if (/M$/i.test(s)) return parseFloat(s.replace(',', '.')) * 1e9;
+      if (/jt$/i.test(s)) return parseFloat(s.replace(',', '.')) * 1e6;
+      s = s.replace(/\./g, '').replace(',', '.');
+      const n = parseFloat(s);
+      return isNaN(n) ? null : n;
+    }
+
+    function formatLevel(num, type) {
+      if (num == null) return '-';
+      if (type === 'crypto') {
+        if (num >= 1e9) return (num / 1e9).toFixed(2).replace('.', ',') + ' M';
+        if (num >= 1e6) return (num / 1e6).toFixed(2).replace('.', ',') + ' jt';
+        if (num >= 1000) return Math.round(num).toLocaleString('id-ID');
+        return num.toFixed(4);
+      }
+      if (num >= 50) return num.toFixed(2);
+      return num.toFixed(4);
+    }
+
+    function computeLevels(priceNum, signal, type) {
+      if (!priceNum || priceNum <= 0) return null;
+      const isBuy = signal === 'BUY';
+      const isSell = signal === 'SELL';
+      const slPct = type === 'crypto' ? 0.028 : 0.012;
+      const tp1Pct = type === 'crypto' ? 0.035 : 0.015;
+      const tp2Pct = type === 'crypto' ? 0.065 : 0.028;
+      const entryPct = type === 'crypto' ? 0.008 : 0.003;
+      let entryLow, entryHigh, sl, tp1, tp2;
+      if (isBuy) {
+        entryLow = priceNum * (1 - entryPct);
+        entryHigh = priceNum * (1 + entryPct * 0.3);
+        sl = priceNum * (1 - slPct);
+        tp1 = priceNum * (1 + tp1Pct);
+        tp2 = priceNum * (1 + tp2Pct);
+      } else if (isSell) {
+        entryLow = priceNum * (1 - entryPct * 0.3);
+        entryHigh = priceNum * (1 + entryPct);
+        sl = priceNum * (1 + slPct);
+        tp1 = priceNum * (1 - tp1Pct);
+        tp2 = priceNum * (1 - tp2Pct);
+      } else {
+        entryLow = priceNum * 0.995;
+        entryHigh = priceNum * 1.005;
+        sl = priceNum * 0.97;
+        tp1 = priceNum * 1.02;
+        tp2 = priceNum * 1.04;
+      }
+      const risk = Math.abs(priceNum - sl);
+      const reward = Math.abs(tp1 - priceNum);
+      const rr = risk > 0 ? (reward / risk).toFixed(1) : '-';
+      return {
+        entry: formatLevel(entryLow, type) + ' - ' + formatLevel(entryHigh, type),
+        sl: formatLevel(sl, type),
+        tp1: formatLevel(tp1, type),
+        tp2: formatLevel(tp2, type),
+        rr: '1 : ' + rr
+      };
+    }
+
+    function liveSignalFromChange(changePct, baseSignal) {
+      if (changePct == null) return baseSignal;
+      if (changePct >= 1.2) return 'BUY';
+      if (changePct <= -1.2) return 'SELL';
+      if (changePct >= 0.4) return baseSignal === 'SELL' ? 'HOLD' : 'BUY';
+      if (changePct <= -0.4) return baseSignal === 'BUY' ? 'HOLD' : 'SELL';
+      return (baseSignal === 'BUY' || baseSignal === 'SELL') ? baseSignal : 'HOLD';
+    }
+
+    function renderDetail(symbol, liveOverride = null) {
+      const data = { ...(assetData[symbol] || defaultAsset) };
+      if (liveOverride) {
+        data.price = liveOverride.price;
+        if (liveOverride.change) {
+          data.change = liveOverride.change;
+          data.changePos = liveOverride.changePos;
+        }
+        if (liveOverride.rawChange != null) {
+          data.signal = liveSignalFromChange(liveOverride.rawChange, data.signal);
+        }
+        const priceNum = liveOverride.rawPrice || parsePriceNum(liveOverride.price);
+        const levels = computeLevels(priceNum, data.signal, data.type);
+        if (levels) {
+          data.entry = levels.entry;
+          data.sl = levels.sl;
+          data.tp1 = levels.tp1;
+          data.tp2 = levels.tp2;
+          data.rr = levels.rr;
+        }
+      }
+      const isBuy = data.signal === 'BUY';
+      const signalColor = isBuy ? 'emerald' : (data.signal === 'SELL' ? 'red' : 'slate');
+      const isLive = !!liveOverride;
+
+      const specialHtml = (data.special || []).map(s => `
+        <div class="bg-dark-800 border border-${s.color}-500/30 rounded-xl p-4">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="w-2 h-2 rounded-full bg-${s.color}-400"></span>
+            <p class="text-xs font-semibold text-${s.color}-400 uppercase">${s.title}</p>
+          </div>
+          <p class="text-sm text-slate-300">${s.text}</p>
+          <p class="text-xs text-slate-500 mt-1">${s.sub}</p>
+        </div>
+      `).join('');
+
+      const techHtml = (data.techSummary || []).map(t => `
+        <div class="flex justify-between py-1.5">
+          <span class="text-slate-400">${t.label}</span>
+          <span class="${t.pos === true ? 'text-emerald-400' : t.pos === false ? 'text-red-400' : ''}">${t.value}</span>
+        </div>
+      `).join('');
+
+      const fundHtml = (data.fundSummary || []).map(t => `
+        <div class="flex justify-between py-1.5">
+          <span class="text-slate-400">${t.label}</span>
+          <span class="${t.pos === true ? 'text-emerald-400' : t.pos === false ? 'text-red-400' : ''}">${t.value}</span>
+        </div>
+      `).join('');
+
+      const newsHtml = (data.news || []).map(n => {
+        const sentClass = n.sentiment === 'Positif' ? 'bg-emerald-500/20 text-emerald-400' : n.sentiment === 'Negatif' ? 'bg-red-500/20 text-red-400' : 'bg-slate-500/20 text-slate-300';
+        return `
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 hover:border-amber-500/40 transition">
+            <div class="flex items-center gap-2 mb-2">
+              <span class="text-xs ${sentClass} px-2 py-0.5 rounded">${n.sentiment}</span>
+              <span class="text-xs text-slate-500">${n.time} • ${n.source}</span>
+            </div>
+            <h4 class="font-medium mb-1">${n.title}</h4>
+            <p class="text-sm text-slate-400">${n.desc}</p>
+          </div>
+        `;
+      }).join('');
+
+      const tagsHtml = (data.tags || []).map(t => `<span class="text-xs bg-dark-700 px-2 py-0.5 rounded text-slate-300">${t}</span>`).join('');
+
+      document.getElementById('mainContent').innerHTML = `
+        <div class="mb-6">
+          <a href="yuan-terminal.html" class="inline-flex items-center gap-2 text-sm text-slate-400 hover:text-amber-400 mb-4">
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+            Kembali ke Screener
+          </a>
+
+          <div class="flex items-start justify-between flex-wrap gap-4">
+            <div class="flex items-center gap-4">
+              <div class="w-14 h-14 rounded-xl bg-amber-500/20 flex items-center justify-center text-xl font-bold text-amber-400">${data.symbol.slice(0,2)}</div>
+              <div>
+                <h1 class="text-2xl font-bold">${data.symbol}</h1>
+                <p class="text-slate-400">${data.name}</p>
+                <div class="flex items-center gap-2 mt-1 flex-wrap">
+                  <span class="text-xs bg-dark-700 px-2 py-0.5 rounded text-slate-300">${data.type.toUpperCase()}</span>
+                  ${tagsHtml}
+                </div>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-3xl font-bold">${data.price}</p>
+              <p class="${data.changePos ? 'text-emerald-400' : 'text-red-400'} font-medium">${data.change}</p>
+              <p class="text-xs text-slate-500 mt-1">
+                ${isLive ? '<span class="text-emerald-400">● Live</span> · ' : ''}
+                Update: ${new Date().toLocaleTimeString('id-ID')}
+              </p>
+            </div>
+          </div>
+
+          <div class="flex gap-3 mt-5">
+            <button class="px-4 py-2 bg-amber-500 hover:bg-amber-400 text-dark-900 text-sm font-medium rounded-lg transition">+ Watchlist</button>
+            <button class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-sm font-medium rounded-lg transition">Set Alert</button>
+            <button class="px-4 py-2 bg-dark-700 hover:bg-dark-600 text-sm font-medium rounded-lg transition">Share</button>
+          </div>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">${specialHtml}</div>
+
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+            <p class="text-xs text-slate-500 mb-2">Skor Teknikal</p>
+            <div class="flex items-end gap-2">
+              <span class="text-4xl font-bold ${data.scoreTech >= 70 ? 'text-emerald-400' : data.scoreTech >= 50 ? 'text-yellow-400' : 'text-red-400'}">${data.scoreTech}</span>
+              <span class="text-slate-400 mb-1">/100</span>
+            </div>
+            <div class="w-full bg-dark-700 rounded-full h-2 mt-3">
+              <div class="h-2 rounded-full ${data.scoreTech >= 70 ? 'bg-emerald-500' : data.scoreTech >= 50 ? 'bg-yellow-500' : 'bg-red-500'}" style="width: ${data.scoreTech}%"></div>
+            </div>
+          </div>
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+            <p class="text-xs text-slate-500 mb-2">${data.type === 'saham' ? 'Skor Fundamental' : 'Skor Sentiment/Macro'}</p>
+            <div class="flex items-end gap-2">
+              <span class="text-4xl font-bold text-amber-400">${data.scoreFund}</span>
+              <span class="text-slate-400 mb-1">/100</span>
+            </div>
+            <div class="w-full bg-dark-700 rounded-full h-2 mt-3">
+              <div class="bg-amber-500 h-2 rounded-full" style="width: ${data.scoreFund}%"></div>
+            </div>
+          </div>
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+            <p class="text-xs text-slate-500 mb-2">Rekomendasi</p>
+            <div class="flex items-center gap-3 mt-1">
+              <span class="text-2xl font-bold text-${signalColor}-400">${data.signal}</span>
+              <span class="text-xs bg-${signalColor}-500/20 text-${signalColor}-400 px-2 py-1 rounded">${data.signalNote}</span>
+            </div>
+            <p class="text-xs text-slate-400 mt-3">Berdasarkan konfluensi teknikal + volume</p>
+          </div>
+        </div>
+
+        <!-- TP1 TP2 SL -->
+        <div class="bg-dark-800 border border-dark-600 rounded-xl p-5 mb-6">
+          <h3 class="font-semibold mb-4">Level Trading (Auto)</h3>
+          <div class="grid grid-cols-2 md:grid-cols-5 gap-4">
+            <div class="bg-dark-700/50 rounded-lg p-4 text-center">
+              <p class="text-xs text-slate-500 mb-1">Entry Zone</p>
+              <p class="text-lg font-semibold text-amber-400">${data.entry}</p>
+            </div>
+            <div class="bg-dark-700/50 rounded-lg p-4 text-center">
+              <p class="text-xs text-slate-500 mb-1">Stop Loss</p>
+              <p class="text-lg font-semibold text-red-400">${data.sl}</p>
+            </div>
+            <div class="bg-dark-700/50 rounded-lg p-4 text-center">
+              <p class="text-xs text-slate-500 mb-1">Take Profit 1</p>
+              <p class="text-lg font-semibold text-emerald-400">${data.tp1}</p>
+            </div>
+            <div class="bg-dark-700/50 rounded-lg p-4 text-center">
+              <p class="text-xs text-slate-500 mb-1">Take Profit 2</p>
+              <p class="text-lg font-semibold text-emerald-400">${data.tp2}</p>
+            </div>
+            <div class="bg-dark-700/50 rounded-lg p-4 text-center">
+              <p class="text-xs text-slate-500 mb-1">Risk : Reward</p>
+              <p class="text-lg font-semibold">${data.rr}</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="bg-dark-800 border border-amber-500/30 rounded-xl p-5 mb-6">
+          <h3 class="font-semibold mb-3 flex items-center gap-2">
+            <span class="w-1.5 h-1.5 rounded-full bg-amber-400"></span>
+            Analisa Singkat
+          </h3>
+          <p class="text-sm text-slate-300 leading-relaxed">${data.analysis}</p>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-5 mb-6">
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+            <h3 class="font-semibold mb-4">Ringkasan Teknikal</h3>
+            <div class="space-y-1 text-sm">${techHtml}</div>
+          </div>
+          <div class="bg-dark-800 border border-dark-600 rounded-xl p-5">
+            <h3 class="font-semibold mb-4">${data.type === 'saham' ? 'Ringkasan Fundamental' : data.type === 'forex' ? 'Ringkasan Makro' : 'Ringkasan On-Chain / Sentiment'}</h3>
+            <div class="space-y-1 text-sm">${fundHtml}</div>
+          </div>
+        </div>
+
+        <div class="mb-6">
+          <h3 class="font-semibold mb-4">Berita & Update Terbaru</h3>
+          <div class="space-y-4">${newsHtml || '<p class="text-slate-500 text-sm">Belum ada berita.</p>'}</div>
+        </div>
+      `;
+    }
+
+    // Init with live price
+    (async () => {
+      const symbol = getQuerySymbol();
+      const base = assetData[symbol] || defaultAsset;
+      let live = null;
+      if (base.type === 'crypto' || base.type === 'forex') {
+        live = await fetchLivePrice(symbol, base.type);
+      }
+      renderDetail(symbol, live);
+
+      // Auto refresh every 60s for crypto/forex
+      if (base.type === 'crypto' || base.type === 'forex') {
+        setInterval(async () => {
+          const live2 = await fetchLivePrice(symbol, base.type);
+          if (live2) renderDetail(symbol, live2);
+        }, 60000);
+      }
+    })();
+  </script>
+</body>
+</html>
